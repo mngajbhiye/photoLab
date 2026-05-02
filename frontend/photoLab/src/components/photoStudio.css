@@ -744,3 +744,30 @@ body,
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--rose-pale); border-radius: 2px; }
+
+/* ─── Toggle row (border checkbox) ─────────────────────────── */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.toggle-check {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--rose);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.toggle-label {
+  font-size: 11px;
+  color: var(--ink);
+}
+
+/* ─── Full-width button ─────────────────────────────────────── */
+.btn--full {
+  width: 100%;
+  justify-content: center;
+}

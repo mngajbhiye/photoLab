@@ -1,4 +1,4 @@
-import CanvasEditor from "./components/canvasEditor";
+import CanvasEditor from "./components/photoStudio";
 
 function App() {
   return <CanvasEditor />;
