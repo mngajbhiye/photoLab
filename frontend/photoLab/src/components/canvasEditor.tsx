@@ -7,7 +7,7 @@ import {
   blobToDataURL,
   removeBackground,
   addSolidBackground,
-  layoutOnSheet,
+  layoutOnSheetPDF,
   PASSPORT_SIZES,
   SHEET_SIZES,
   DEFAULT_ADJUSTMENTS,
@@ -211,7 +211,7 @@ const CanvasEditor: React.FC = () => {
     setLayouting(true);
     setError(null);
     try {
-      const { blob, copies } = await layoutOnSheet(source, region, sheetSize);
+      const { blob, copies } = await layoutOnSheetPDF(source, region, sheetSize);
       const dataUrl = await blobToDataURL(blob);
       setLayoutBlob(blob);
       setLayoutImage(dataUrl);
@@ -239,7 +239,7 @@ const CanvasEditor: React.FC = () => {
 
   const handleDownloadSheet = () => {
     if (!layoutBlob) return;
-    download(layoutBlob, `passport_sheet_${sheetSize}_${region}.jpg`);
+    download(layoutBlob, `passport_sheet_${sheetSize}_${region}.pdf`);
   };
 
   return (

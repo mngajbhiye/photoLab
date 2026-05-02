@@ -1,4 +1,5 @@
 // utils/cropImage.ts
+import jsPDF from "jspdf";
 
 export type Area = {
   width:  number;
@@ -25,6 +26,7 @@ export const DEFAULT_ADJUSTMENTS: Adjustments = {
 
 // Passport output dimensions at 300 DPI
 export const PASSPORT_SIZES = {
+  IN_UNOFFICIAL: { width: 330,  height: 424,  label: "India (28×36mm)" },
   IN: { width: 413,  height: 531,  label: "India (35×45mm)" },
   US: { width: 600,  height: 600,  label: "US (2×2 in)"     },
   UK: { width: 413,  height: 531,  label: "UK (35×45mm)"    },
@@ -299,7 +301,9 @@ export const SHEET_SIZES = {
 export type SheetSize = keyof typeof SHEET_SIZES;
 
 const DPI       = 300;
-const MM_TO_PX  = DPI / 25.4;   // 1mm at 300 DPI
+const MM_TO_PX = DPI / 25.4;   // 1mm at 300 DPI
+const PX_TO_MM = 25.4 / 300;
+
 
 /**
  * Tiles copies of a passport photo onto a print-size sheet at 300 DPI.
@@ -310,60 +314,64 @@ const MM_TO_PX  = DPI / 25.4;   // 1mm at 300 DPI
  * @param sheetSize  - Target paper size key
  * @returns JPEG Blob of the tiled sheet, ready to print
  */
-export async function layoutOnSheet(
+
+export async function layoutOnSheetPDF(
   photoBlob: Blob,
-  region:    PassportRegion,
+  region: PassportRegion,
   sheetSize: SheetSize = "A4"
 ): Promise<{ blob: Blob; copies: number }> {
-  // Load the photo
-  const photoUrl = URL.createObjectURL(photoBlob);
-  const img      = new Image();
-  img.crossOrigin = "anonymous";
-  await new Promise<void>((res, rej) => {
-    img.onload  = () => res();
-    img.onerror = () => rej(new Error("Failed to load photo for layout"));
-    img.src = photoUrl;
-  });
-  URL.revokeObjectURL(photoUrl);
 
   const { widthMm, heightMm } = SHEET_SIZES[sheetSize];
-  const { width: photoW, height: photoH } = PASSPORT_SIZES[region];
+  const { width: photoWpx, height: photoHpx } = PASSPORT_SIZES[region];
 
-  // Sheet canvas dimensions in pixels at 300 DPI
-  const sheetW = Math.round(widthMm  * MM_TO_PX);
-  const sheetH = Math.round(heightMm * MM_TO_PX);
+  // Convert px → mm (based on 300 DPI)
+  const photoWmm = photoWpx * PX_TO_MM;
+  const photoHmm = photoHpx * PX_TO_MM;
 
-  const marginPx = Math.round(10 * MM_TO_PX);   // 10mm margin
-  const gapPx    = Math.round(3  * MM_TO_PX);   // 3mm gap
+  const margin = 10; // mm
+  const gap    = 3;  // mm
 
-  // How many photos fit per row and column
-  const cols = Math.floor((sheetW - 2 * marginPx + gapPx) / (photoW + gapPx));
-  const rows = Math.floor((sheetH - 2 * marginPx + gapPx) / (photoH + gapPx));
+  const cols = Math.floor((widthMm - 2 * margin + gap) / (photoWmm + gap));
+  const rows = Math.floor((heightMm - 2 * margin + gap) / (photoHmm + gap));
   const copies = cols * rows;
 
-  const canvas = document.createElement("canvas");
-  canvas.width  = sheetW;
-  canvas.height = sheetH;
+  // Create PDF (IMPORTANT: unit = mm)
+  const pdf = new jsPDF({
+    orientation: "portrait",
+    unit: "mm",
+    format: [widthMm, heightMm],
+  });
 
-  const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("Failed to get canvas context");
+  // Convert Blob → base64
+  const imgData = await blobToDataURL(photoBlob);
 
-  // White sheet background
-  ctx.fillStyle = "#FFFFFF";
-  ctx.fillRect(0, 0, sheetW, sheetH);
+  // Center grid
+  const totalW = cols * photoWmm + (cols - 1) * gap;
+  const totalH = rows * photoHmm + (rows - 1) * gap;
 
-  // Draw each copy
+  const startX = (widthMm - totalW) / 2;
+  const startY = (heightMm - totalH) / 2;
+
+  // Draw images 
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
-      const x = marginPx + col * (photoW + gapPx);
-      const y = marginPx + row * (photoH + gapPx);
-      ctx.drawImage(img, x, y, photoW, photoH);
+
+      const x = startX + col * (photoWmm + gap);
+      const y = startY + row * (photoHmm + gap);
+
+      pdf.addImage(
+        imgData,
+        "JPEG",  // or "PNG" if transparent
+        x,
+        y,
+        photoWmm,
+        photoHmm
+      );
     }
   }
 
-  const blob = await new Promise<Blob>((res, rej) =>
-    canvas.toBlob(b => b ? res(b) : rej(new Error("toBlob failed")), "image/jpeg", 0.97)
-  );
+  // Export as Blob
+  const blob = pdf.output("blob");
 
   return { blob, copies };
 }
