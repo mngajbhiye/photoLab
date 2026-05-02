@@ -1,0 +1,746 @@
+/* CanvasEditor.css
+   Palette:
+     --rose:   #DC9B9B  — accent, buttons, focus
+     --cream:  #F6F4E8  — page background
+     --sage:   #E5EEE4  — card / panel background
+     --mint:   #C0E1D2  — hover states, result panel
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap');
+
+/* ─── Reset & Base ─────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --rose:        #DC9B9B;
+  --rose-dark:   #c98080;
+  --rose-pale:   #f0d8d8;
+  --cream:       #F6F4E8;
+  --sage:        #E5EEE4;
+  --mint:        #C0E1D2;
+  --mint-dark:   #a3cfc0;
+  --ink:         #3a3530;
+  --ink-light:   #7a7470;
+  --border:      rgba(58, 53, 48, 0.10);
+
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-mono:    'DM Mono', 'Courier New', monospace;
+
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   14px;
+
+  --transition:  180ms ease;
+}
+
+/* ─── Page Shell: lock to viewport, no scroll ──────────────── */
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--cream);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 300;
+  letter-spacing: 0.01em;
+  line-height: 1.6;
+}
+
+/* ─── Outer centering shell ─────────────────────────────────── */
+.editor-shell {
+  width: 100%;
+  height: 100%;               /* fills #root which fills body/html */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ─── Editor card: 3-column grid ────────────────────────────── */
+.editor {
+  width: 90vw;
+  max-width: 1280px;
+  min-width: 860px;
+  height: calc(100vh - 48px);
+  background: var(--sage);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 40px rgba(58, 53, 48, 0.08);
+  display: grid;
+  grid-template-columns: 240px 1fr 260px;   /* controls | cropper | output */
+  grid-template-rows: 56px 1fr;              /* header | content */
+  overflow: hidden;
+  animation: fadeUp 0.45s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Header: spans full width ──────────────────────────────── */
+.editor__header {
+  grid-column: 1 / -1;
+  padding: 20px 28px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  background: var(--cream);
+}
+
+.editor__title {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  line-height: 1;
+}
+
+.editor__subtitle {
+  font-size: 10px;
+  color: var(--ink-light);
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+}
+
+/* ─── Left pane: controls ───────────────────────────────────── */
+.editor__controls {
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--sage);
+  overflow: hidden;
+}
+
+/* Scrollable inner — lets sliders overflow without breaking layout */
+.controls__scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px 24px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--rose-pale) transparent;
+}
+
+.controls__scroll::-webkit-scrollbar { width: 3px; }
+.controls__scroll::-webkit-scrollbar-thumb {
+  background: var(--rose-pale);
+  border-radius: 2px;
+}
+
+/* Sticky footer — crop button always visible */
+.controls__footer {
+  flex-shrink: 0;
+  padding: 14px 24px 18px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--sage);
+}
+
+/* ─── Col 2: Cropper pane ───────────────────────────────────── */
+.editor__cropper {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+  background: var(--ink);
+  border-right: 1px solid var(--border);
+}
+
+/* ─── Col 3: Output / result pane ───────────────────────────── */
+.editor__output {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--cream);
+  overflow: hidden;
+}
+
+/* Photo preview area — fills available space */
+.output__photo-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 20px;
+  overflow: hidden;
+}
+
+/* Frame provides the coloured/checkerboard backdrop */
+.output__photo-frame {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(58, 53, 48, 0.14);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  max-height: calc(100% - 80px);
+  transition: background 200ms ease;
+}
+
+/* The actual photo — constrained to fit the frame */
+.output__photo {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.output__stage-label {
+  font-size: 9px;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  text-align: center;
+}
+
+/* Action bar — pinned above the sheet preview or at bottom */
+.output__actions {
+  flex-shrink: 0;
+  padding: 10px 16px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  background: var(--cream);
+}
+
+/* Sheet preview — scrollable if image is tall */
+.output__sheet-area {
+  flex-shrink: 0;
+  padding: 12px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--sage);
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.output__sheet-label {
+  font-size: 9px;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+}
+
+.output__sheet-frame {
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(58, 53, 48, 0.08);
+}
+
+.output__sheet-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* full-width button variant */
+.btn--full {
+  width: 100%;
+}
+
+/* ─── Section ───────────────────────────────────────────────── */
+.editor__section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.editor__label {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+}
+
+/* ─── File Upload ───────────────────────────────────────────── */
+.upload-zone {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--cream);
+  border: 1.5px dashed rgba(58, 53, 48, 0.18);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition);
+}
+
+.upload-zone:hover {
+  border-color: var(--rose);
+  background: var(--sage);
+}
+
+.upload-zone input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+
+.upload-zone__icon {
+  width: 22px;
+  height: 22px;
+  color: var(--rose);
+  flex-shrink: 0;
+}
+
+.upload-zone__text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.upload-zone__primary {
+  font-size: 11px;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.upload-zone__secondary {
+  font-size: 9px;
+  color: var(--ink-light);
+}
+
+/* ─── Select ────────────────────────────────────────────────── */
+.editor__select {
+  width: 100%;
+  appearance: none;
+  background-color: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 32px 8px 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 300;
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color var(--transition);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a7470' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+
+.editor__select:focus {
+  outline: none;
+  border-color: var(--rose);
+}
+
+/* ─── Cropper Container ─────────────────────────────────────── */
+/*
+  Fix: The container is a neutral viewport — it should NOT use aspect-ratio: 35/45.
+  That was distorting the cropping area. Instead give it a fixed height that fills
+  the right pane, and let react-easy-crop handle the crop shape via its `aspect` prop.
+*/
+.cropper-wrap {
+  flex: 1;                      /* fills remaining height of right pane */
+  position: relative;
+  overflow: hidden;
+  background: var(--ink);       /* dark bg so photo edges are clear */
+}
+
+/* Override react-easy-crop defaults to match palette */
+.cropper-wrap .reactEasyCrop_CropArea {
+  border: 1.5px solid var(--rose) !important;
+  box-shadow: 0 0 0 9999px rgba(58, 53, 48, 0.45) !important; /* dark scrim, not cream */
+}
+
+.cropper-wrap .reactEasyCrop_CropAreaGrid::before,
+.cropper-wrap .reactEasyCrop_CropAreaGrid::after {
+  border-color: rgba(220, 155, 155, 0.30) !important;
+}
+
+/* ─── Cropper bottom bar: zoom + crop button ────────────────── */
+.cropper-bar {
+  padding: 12px 18px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--cream);
+  flex-shrink: 0;
+}
+
+/* ─── Shared slider row (zoom + all adjustments) ────────────── */
+.adj-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.adj-value {
+  font-size: 10px;
+  color: var(--ink);
+  width: 36px;
+  text-align: right;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.adj-value--muted {
+  color: var(--ink-light);
+}
+
+.adj-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.adj-label {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+}
+
+.adj-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btn-reset {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--rose);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  opacity: 0.85;
+  transition: opacity var(--transition);
+}
+
+.btn-reset:hover { opacity: 1; }
+
+/* ─── Unified slider style ──────────────────────────────────── */
+.adj-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 2px;
+  background: linear-gradient(
+    to right,
+    var(--rose) 0%,
+    var(--rose) var(--fill-pct, 0%),
+    rgba(58, 53, 48, 0.15) var(--fill-pct, 0%),
+    rgba(58, 53, 48, 0.15) 100%
+  );
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.adj-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--cream);
+  border: 2px solid var(--rose);
+  box-shadow: 0 1px 4px rgba(220, 155, 155, 0.30);
+  transition: transform var(--transition), box-shadow var(--transition);
+  cursor: grab;
+}
+
+.adj-slider::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.2);
+  box-shadow: 0 2px 8px rgba(220, 155, 155, 0.45);
+}
+
+.adj-slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--cream);
+  border: 2px solid var(--rose);
+  cursor: grab;
+}
+
+/* Skin smoothing — mint accent instead of rose */
+.adj-slider--skin {
+  background: linear-gradient(
+    to right,
+    var(--mint-dark) 0%,
+    var(--mint-dark) var(--fill-pct, 0%),
+    rgba(58, 53, 48, 0.15) var(--fill-pct, 0%),
+    rgba(58, 53, 48, 0.15) 100%
+  );
+}
+
+.adj-slider--skin::-webkit-slider-thumb {
+  border-color: var(--mint-dark);
+  box-shadow: 0 1px 4px rgba(163, 207, 192, 0.40);
+}
+
+.adj-slider--skin::-webkit-slider-thumb:active {
+  box-shadow: 0 2px 8px rgba(163, 207, 192, 0.55);
+}
+
+.adj-slider--skin::-moz-range-thumb {
+  border-color: var(--mint-dark);
+}
+
+.adj-label--skin {
+  color: var(--mint-dark);
+}
+
+.adj-note {
+  font-size: 9px;
+  color: var(--mint-dark);
+  opacity: 0.8;
+  letter-spacing: 0.04em;
+}
+
+.skin-divider {
+  border: none;
+  border-top: 1px dashed rgba(163, 207, 192, 0.5);
+  margin: 2px 0;
+}
+
+/* ─── Buttons ───────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 20px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: none;
+  flex-shrink: 0;
+  transition:
+    background var(--transition),
+    transform var(--transition),
+    box-shadow var(--transition);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.btn--primary {
+  background: var(--rose);
+  color: var(--cream);
+  box-shadow: 0 2px 8px rgba(220, 155, 155, 0.30);
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: var(--rose-dark);
+  box-shadow: 0 4px 14px rgba(220, 155, 155, 0.40);
+}
+
+.btn--primary:disabled {
+  background: var(--rose-pale);
+  color: var(--rose);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.btn--secondary {
+  background: var(--mint);
+  color: var(--ink);
+}
+
+.btn--secondary:hover {
+  background: var(--mint-dark);
+}
+
+.btn-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn--outline {
+  background: transparent;
+  color: var(--ink);
+  border: 1.5px solid var(--border);
+  box-shadow: none;
+}
+
+.btn--outline:hover:not(:disabled) {
+  border-color: var(--ink);
+  background: rgba(58, 53, 48, 0.04);
+}
+
+.btn--outline:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Dark spinner for use on light backgrounds */
+.btn__spinner--dark {
+  border-color: rgba(58, 53, 48, 0.2);
+  border-top-color: var(--ink);
+}
+
+/* ─── Loading spinner ───────────────────────────────────────── */
+.btn--loading .btn__spinner {
+  width: 11px;
+  height: 11px;
+  border: 1.5px solid rgba(246, 244, 232, 0.35);
+  border-top-color: var(--cream);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── Divider ───────────────────────────────────────────────── */
+.editor__divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2px 0;
+}
+
+/* ─── Error ─────────────────────────────────────────────────── */
+.editor__error {
+  padding: 8px 12px;
+  background: var(--rose-pale);
+  border-left: 3px solid var(--rose);
+  border-radius: var(--radius-sm);
+  font-size: 10px;
+  color: var(--rose-dark);
+}
+
+/* ─── Empty state (no image uploaded yet) ───────────────────── */
+.preview-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--ink-light);
+}
+
+.preview-empty__icon {
+  width: 40px;
+  height: 40px;
+  opacity: 0.25;
+}
+
+.preview-empty__text {
+  font-size: 10px;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  opacity: 0.5;
+}
+
+/* ─── Background colour swatches ────────────────────────────── */
+.color-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.color-swatch {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(58, 53, 48, 0.15);
+  cursor: pointer;
+  transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+  flex-shrink: 0;
+}
+
+.color-swatch:hover:not(:disabled) {
+  transform: scale(1.15);
+  border-color: var(--ink);
+}
+
+.color-swatch--active {
+  border-color: var(--ink) !important;
+  box-shadow: 0 0 0 2px var(--cream), 0 0 0 3.5px var(--ink);
+}
+
+.color-swatch:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Custom colour swatch — wraps <input type="color"> */
+.color-swatch--custom {
+  background: conic-gradient(
+    #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00
+  );
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.color-swatch--custom input[type="color"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+}
+
+.color-swatch--custom span {
+  font-size: 14px;
+  color: #fff;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  pointer-events: none;
+  line-height: 1;
+}
+
+/* ─── Focus ring (a11y) ─────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--rose);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* ─── Scrollbar (just in case content ever overflows) ───────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--rose-pale); border-radius: 2px; }
