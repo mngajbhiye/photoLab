@@ -2,6 +2,8 @@
 
 import React, { useState, useCallback, useRef } from "react";
 import Cropper from "react-easy-crop";
+import { useAuth } from "../context/AuthContext";
+import { useRemoveBgQuota } from "../hooks/useRemoveBgQuota";
 import {
   getCroppedImg,
   blobToDataURL,
@@ -113,6 +115,10 @@ const EMPTY_PIPELINE: Pipeline = {
 // ─────────────────────────────────────────────────────────────
 
 const PhotoStudio: React.FC = () => {
+  // Auth & quotas
+  const { user } = useAuth();
+  const quota = useRemoveBgQuota();
+
   const [image, setImage] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const objectUrlRef = useRef<string | null>(null);
@@ -280,12 +286,34 @@ const PhotoStudio: React.FC = () => {
 
   // ── Step 2: Remove background ─────────────────────────────────
   const handleRemoveBg = async () => {
+    // Check authentication first
+    if (!user) {
+      setError("Please sign in to use background removal");
+      return;
+    }
+
+    // Check quota
+    if (quota.limitReached) {
+      setError(
+        `Daily limit reached: ${quota.used}/50 requests used. Try again tomorrow.`,
+      );
+      return;
+    }
+
     if (!pipe.croppedBlob) return;
     setBusy("removingBg");
     setError(null);
     setPdfBlob(null);
     setSheetPreview(null);
+
     try {
+      // Consume quota before making API call
+      const consumed = await quota.consume();
+      if (!consumed) {
+        setError("Failed to consume quota. Please try again.");
+        return;
+      }
+
       const noBg = await removeBackground(pipe.croppedBlob);
       await commitPipe(
         {

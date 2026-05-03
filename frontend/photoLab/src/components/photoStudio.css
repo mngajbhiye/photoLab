@@ -869,7 +869,7 @@ body,
   }
 
   .editor__controls {
-    max-height: 160px;
+    max-height: 100%;
   }
 
   .controls__scroll {
@@ -990,7 +990,7 @@ body,
   }
 
   .editor__controls {
-    max-height: 160px;
+    max-height: 100%;
   }
 
   .controls__scroll {
@@ -1030,7 +1030,7 @@ body,
   }
 
   .editor__controls {
-    max-height: 160px;
+    max-height: 100%;
   }
 
   .controls__scroll {
@@ -1244,7 +1244,7 @@ body,
   }
 
   .editor__controls {
-    max-height: 180px;
+    max-height: 100%;
   }
 
   .controls__scroll {
