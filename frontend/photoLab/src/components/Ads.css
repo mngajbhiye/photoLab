@@ -1,0 +1,100 @@
+.ad-left,
+.ad-right {
+  width: 160px;
+  height: 600px;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #666;
+  flex-shrink: 0;
+  transition: width 0.3s ease, height 0.3s ease, font-size 0.3s ease;
+}
+
+/* ═════════════════════════════════════════════════════════════ */
+/* RESPONSIVE MEDIA QUERIES                                     */
+/* ═════════════════════════════════════════════════════════════ */
+
+/* Large screens: Full-size ads */
+@media (min-width: 1401px) {
+  .ad-left,
+  .ad-right {
+    width: 160px;
+    height: 600px;
+    font-size: 14px;
+  }
+}
+
+/* Large tablet / iPad landscape: 1025px to 1400px */
+@media (max-width: 1400px) and (min-width: 1025px) {
+  .ad-left,
+  .ad-right {
+    width: 110px;
+    height: 450px;
+    font-size: 12px;
+    border-radius: 6px;
+  }
+}
+
+/* iPad landscape wider: 950px to 1024px */
+@media (max-width: 1024px) and (min-width: 950px) {
+  .ad-left,
+  .ad-right {
+    width: 80px;
+    height: 320px;
+    font-size: 10px;
+    border-radius: 6px;
+  }
+}
+
+/* iPad landscape narrower: 900px to 949px - Full width stacked */
+@media (max-width: 949px) and (min-width: 900px) {
+  .ad-left,
+  .ad-right {
+    width: 100%;
+    height: 90px;
+    font-size: 11px;
+    border-radius: 4px;
+    margin: 5px 0;
+  }
+}
+
+/* iPad portrait: 768px to 899px */
+@media (max-width: 899px) and (min-width: 768px) {
+  .ad-left,
+  .ad-right {
+    width: 100%;
+    height: 90px;
+    font-size: 11px;
+    border-radius: 4px;
+    margin: 5px 0;
+  }
+}
+
+/* Small tablet: 600px to 767px */
+@media (max-width: 767px) and (min-width: 600px) {
+  .ad-left,
+  .ad-right {
+    width: 100%;
+    height: 80px;
+    font-size: 10px;
+    border-radius: 4px;
+    margin: 5px 0;
+  }
+}
+
+/* Mobile: 0px to 599px */
+@media (max-width: 599px) {
+  .ad-left,
+  .ad-right {
+    width: 100%;
+    height: 80px;
+    max-width: calc(100vw - 20px);
+    font-size: 10px;
+    margin: 8px auto;
+    border-radius: 4px;
+  }
+}
