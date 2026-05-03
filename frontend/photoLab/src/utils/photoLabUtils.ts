@@ -25,7 +25,7 @@ export const DEFAULT_ADJUSTMENTS: Adjustments = {
 
 // ── Passport sizes at 300 DPI ─────────────────────────────────
 export const PASSPORT_SIZES = {
-  IN_UNOFFICIAL: { width: 330, height: 424, label: "India (28×36mm)"  },
+  IN_UO: { width: 330, height: 424, label: "India (28×36mm)"  },
   IN:            { width: 413, height: 531, label: "India (35×45mm)"  },
   US:            { width: 600, height: 600, label: "US (2×2 in)"      },
   UK:            { width: 413, height: 531, label: "UK (35×45mm)"     },
