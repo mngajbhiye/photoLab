@@ -1,4 +1,4 @@
-// components/photoStudio.tsx
+// components/PhotoStudio.tsx
 
 import React, { useState, useCallback, useRef } from "react";
 import Cropper from "react-easy-crop";
@@ -18,7 +18,7 @@ import {
   type SheetSize,
   type Adjustments,
 } from "../utils/photoLabUtils";
-import "./photoStudio.css";
+import "./PhotoStudio.css";
 
 // ── Slider config ─────────────────────────────────────────────
 const SLIDERS: {
@@ -112,7 +112,7 @@ const EMPTY_PIPELINE: Pipeline = {
 
 // ─────────────────────────────────────────────────────────────
 
-const photoStudio: React.FC = () => {
+const PhotoStudio: React.FC = () => {
   const [image, setImage] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const objectUrlRef = useRef<string | null>(null);
@@ -124,7 +124,7 @@ const photoStudio: React.FC = () => {
   const [pipe, setPipe] = useState<Pipeline>(EMPTY_PIPELINE);
   const [adjustments, setAdj0] = useState<Adjustments>(DEFAULT_ADJUSTMENTS);
   const [borderSize, setBorderSize] = useState(4);
-  const [region, setRegion] = useState<PassportRegion>("IN");
+  const [region, setRegion] = useState<PassportRegion>("IN_UO");
   const [sheetSize, setSheetSize] = useState<SheetSize>("A4");
 
   const [busy, setBusy] = useState<
@@ -472,14 +472,8 @@ const photoStudio: React.FC = () => {
               : "Apply effects";
 
   return (
-    <div className="editor-shell" style={{ minHeight: "100vh" }}>
+    <div className="editor-shell">
       <div className="editor">
-        {/* ── Header ─────────────────────────────────────────── */}
-        <header className="editor__header">
-          <h1 className="editor__title">Passport Studio</h1>
-          <span className="editor__subtitle">Crop · Enhance · Print</span>
-        </header>
-
         {/* ══════════════ Col 1: Controls ══════════════════════ */}
         <div className="editor__controls">
           <div className="controls__scroll">
@@ -509,7 +503,7 @@ const photoStudio: React.FC = () => {
                     {fileName ?? "Choose or drag & drop"}
                   </span>
                   <span className="upload-zone__secondary">
-                    PNG, JPG, WEBP · up to 20 MB
+                    PNG, JPG, WEBP · up to 10 MB
                   </span>
                 </div>
               </div>
@@ -942,8 +936,9 @@ const photoStudio: React.FC = () => {
           )}
         </div>
       </div>
+      {/* <Ads side="right" adClient="ca-pub-1234567890" adSlot="9876543210" /> */}
     </div>
   );
 };
 
-export default photoStudio;
+export default PhotoStudio;
