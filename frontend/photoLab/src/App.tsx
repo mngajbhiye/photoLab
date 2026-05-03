@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import PhotoStudio from "./components/PhotoStudio";
 import Navbar from "./components/Navbar";
 import Contact from "./pages/Contact";
 import Studio from "./pages/Studio";

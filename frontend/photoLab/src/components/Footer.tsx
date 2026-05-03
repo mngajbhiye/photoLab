@@ -4,7 +4,7 @@ import { FaYoutube, FaXTwitter } from "react-icons/fa6";
 
 const COMPANY_NAME = "PHOTO LAB";
 
-const CONTACT_INFO = [{ Icon: Mail, text: "info@photolab.com" }];
+// const CONTACT_INFO = [{ Icon: Mail, text: "info@photolab.com" }];
 
 const QUICK_LINKS = ["Product Categories", "About Us", "Contact Us"];
 
