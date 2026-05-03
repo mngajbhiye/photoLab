@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 :root {
   --text: #6b6375;
   --text-h: #08060d;
@@ -15,7 +17,8 @@
   --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
 
-  font: 18px/145% var(--sans);
+  /* font-family: var(--font-display); */
+  font: 18px/145%;
   letter-spacing: 0.18px;
   color-scheme: light dark;
   color: var(--text);
@@ -54,6 +57,7 @@
   width: 1126px;
   max-width: 100%;
   margin: 0 auto;
+  padding: 0;
   text-align: center;
   border-inline: 1px solid var(--border);
   min-height: 100svh;
@@ -65,47 +69,154 @@
 body {
   margin: 0;
 }
-/* 
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+
+.app-layout {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  flex-wrap: wrap;
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
+/* Large screens: Show ads with gap (>1400px) */
+@media (min-width: 1401px) {
+  .app-layout {
+    gap: 20px;
+    flex-wrap: nowrap;
   }
 }
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
+
+/* Large tablet / iPad landscape: 1025px to 1400px */
+@media (max-width: 1400px) and (min-width: 1025px) {
+  .app-layout {
+    gap: 12px;
+    flex-wrap: nowrap;
+    align-items: center;
   }
 }
-p {
-  margin: 0;
+
+/* iPad landscape: 900px to 1024px */
+@media (max-width: 1024px) and (min-width: 950px) {
+  .app-layout {
+    gap: 8px;
+    flex-wrap: nowrap;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
 }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+/* iPad landscape narrower: 900px to 949px - STACK (content too wide) */
+@media (max-width: 949px) and (min-width: 900px) {
+  .app-layout {
+    gap: 10px;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  .main-content {
+    width: 100%;
+    max-width: 95vw;
+  }
 }
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
-} */
+/* iPad portrait: 768px to 899px */
+@media (max-width: 899px) and (min-width: 768px) {
+  .app-layout {
+    gap: 10px;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 15px;
+    padding-bottom: 15px;
+  }
+
+  .main-content {
+    width: 100%;
+    max-width: 95vw;
+  }
+}
+
+/* Small tablet: 600px to 767px */
+@media (max-width: 767px) and (min-width: 600px) {
+  .app-layout {
+    gap: 8px;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  .main-content {
+    width: 100%;
+    max-width: 95vw;
+  }
+}
+
+/* Mobile: 0px to 599px */
+@media (max-width: 599px) {
+  #root {
+    width: 100%;
+    border-inline: none;
+    padding: 0;
+  }
+
+  .app-layout {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    gap: 0;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .main-content {
+    width: 100%;
+    max-width: 100%;
+    padding: 0 10px;
+  }
+}
+
+.main-content {
+  flex: 1;
+  max-width: 1200px;
+}
+
+/* Large tablet / iPad landscape: 1025px to 1400px */
+@media (max-width: 1400px) and (min-width: 1025px) {
+  .main-content {
+    max-width: 900px;
+  }
+}
+
+/* iPad landscape wider: 950px to 1024px */
+@media (max-width: 1024px) and (min-width: 950px) {
+  .main-content {
+    max-width: 820px;
+  }
+}
+
+/* iPad landscape narrower: 900px to 949px */
+@media (max-width: 949px) and (min-width: 900px) {
+  .main-content {
+    width: 100%;
+    max-width: 95vw;
+  }
+}
+
+/* iPad portrait: 768px to 899px */
+@media (max-width: 899px) and (min-width: 768px) {
+  .main-content {
+    max-width: calc(95vw - 20px);
+    width: 100%;
+  }
+}
+
+/* Small tablet: 600px to 767px */
+@media (max-width: 767px) and (min-width: 600px) {
+  .main-content {
+    max-width: calc(95vw - 20px);
+    width: 100%;
+  }
+}
