@@ -21,6 +21,12 @@ app.add_middleware(
 )
 
 
+@app.get("/")
+@app.get("/hello/")
+async def hello():
+    return "Hello World"
+
+
 @app.post("/photolab/remove-bg/")
 async def remove_bg(file: UploadFile = File(...)):
 
@@ -35,4 +41,3 @@ async def remove_bg(file: UploadFile = File(...)):
         io.BytesIO(output_bytes),
         media_type="image/png"   # PNG because background is transparent
     )
-
